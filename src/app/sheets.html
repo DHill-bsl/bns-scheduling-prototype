@@ -92,7 +92,7 @@
             width="130"
             height="55"
           />
-          <span class="eyebrow">POUCH TESTING PILOT</span>
+          <span class="eyebrow">FICTIONAL LAB DEMO</span>
           <h2>Analyst work sheet</h2>
           <p>{{ p.name }} <span class="muted">·</span> {{ date | date: 'EEEE d MMMM yyyy' }}</p>
         </div>
@@ -133,8 +133,8 @@
         </div>
       }
       <div class="paper-note">
-        Prototype sheet with fictional work and estimated times. Do not use for laboratory work.
-        Actual testing must follow the approved method and safety instructions.
+        Prototype sheet with made-up work, recipes, timings and shelf lives. The logo is retained
+        branding, not a claim of laboratory approval. Do not use this sheet for laboratory work.
       </div>
       @for (line of lines(p.id); track line.assignment.id) {
         <section class="paper-task">
@@ -225,9 +225,8 @@
             </p>
           }
           <p class="help">
-            Planning times are estimates, not verified capacity. Quantity does not change the
-            durations. Follow the approved method for fractions, timed interventions and instrument
-            sequences.
+            Planning times and shelf lives are invented, not verified capacity or storage rules.
+            Quantity does not change the durations. Use this sheet only for the fictional demo.
           </p>
           <table>
             <thead>

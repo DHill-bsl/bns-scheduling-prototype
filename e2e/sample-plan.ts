@@ -5,7 +5,7 @@ import { samplePlan } from '../testing/sample-plan';
 export async function loadSamplePlan(page: Page) {
   await page.goto('/');
   await page.evaluate(
-    (s) => localStorage.setItem('bns-planner-v2', JSON.stringify(s)),
+    (s) => localStorage.setItem('lab-planner-fictional-v1', JSON.stringify(s)),
     samplePlan(),
   );
   await page.reload();

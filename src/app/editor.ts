@@ -92,14 +92,14 @@ export class Editor {
         project: '',
         client: '',
         identity: '',
-        methodId: 'NTM0086',
+        methodId: 'DEMO-101',
         quantity: 12,
         ready: true,
         readyDate: this.s.week,
         testDue: this.s.week,
         reportDue: this.s.week,
         blocker: '',
-        standardId: 'std-nic',
+        standardId: 'std-blue',
         stage: 'Awaiting work',
       },
     );
@@ -181,11 +181,11 @@ export class Editor {
         steps: [{ name: '', duration: 30, handsOn: 30, equipment: '' }],
         prerequisites: '',
         source:
-          'Example planning steps. The laboratory must confirm the steps, times and equipment.',
+          'Fictional demonstration only. Enter invented steps, times and equipment for this demo.',
         level: 'L1',
         shelfHours: 24,
         preparedAt: '',
-        notes: 'Demo assumption. Confirm against the controlled method.',
+        notes: 'Fictional demonstration only. Use made-up preparation and shelf-life details.',
       },
     ) as Method & Partial<Standard>;
   }

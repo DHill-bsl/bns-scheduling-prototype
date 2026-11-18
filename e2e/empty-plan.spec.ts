@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { samplePlan } from '../testing/sample-plan';
 
 const state = (page: Page) =>
-  page.evaluate(() => JSON.parse(localStorage.getItem('bns-planner-v2')!));
+  page.evaluate(() => JSON.parse(localStorage.getItem('lab-planner-fictional-v1')!));
 const dialog = (page: Page) => page.getByRole('dialog');
 async function nav(page: Page, name: string) {
   await page.getByRole('navigation').getByRole('link', { name, exact: true }).click();
@@ -81,10 +81,21 @@ test('user creates the first work and schedule; reload keeps it, reset empties i
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
-  const old = JSON.stringify(samplePlan());
-  await page.evaluate((raw) => localStorage.setItem('bns-planner-v1', raw), old);
+  const legacy = samplePlan();
+  legacy.methods[0].name = 'Legacy-only example';
+  legacy.assignments[0].methodSnapshot = structuredClone(legacy.methods[0]);
+  const old = JSON.stringify(legacy);
+  await page.evaluate((raw) => {
+    localStorage.setItem('bns-planner-v1', raw);
+    localStorage.setItem('bns-planner-v2', raw);
+  }, old);
   await page.reload();
   await expect(page.getByRole('button', { name: 'Add your first work' })).toBeVisible();
+  await nav(page, 'Methods & standards');
+  await expect(page.getByRole('heading', { name: 'Coating check', exact: true })).toBeVisible();
+  await expect(page.getByText('Legacy-only example')).toHaveCount(0);
+  await expect(page.locator('main')).toContainText('Fictional demonstration only.');
+  await nav(page, 'Team planner');
   await page.getByRole('button', { name: 'Add your first work' }).click();
   await dialog(page).getByLabel('Project reference').fill('TPN-FIRST');
   await dialog(page).getByLabel('Client', { exact: true }).fill('Fictional client');
@@ -140,5 +151,7 @@ test('user creates the first work and schedule; reload keeps it, reset empties i
   await page.reload();
   await expect(page.getByRole('heading', { name: 'No work yet' })).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('bns-planner-v1'))).toBe(old);
+  expect(await page.evaluate(() => localStorage.getItem('bns-planner-v2'))).toBe(old);
+  expect(JSON.stringify(reset)).not.toContain('Legacy-only example');
   expect(errors).toEqual([]);
 });

@@ -19,7 +19,8 @@ async function save(page: Page) {
   await dialog(page).getByRole('button', { name: 'Save changes', exact: true }).click();
   await expect(dialog(page)).toHaveCount(0);
 }
-const stored = (page: Page) => page.evaluate(() => localStorage.getItem('bns-planner-v2'));
+const stored = (page: Page) =>
+  page.evaluate(() => localStorage.getItem('lab-planner-fictional-v1'));
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
   page.once('dialog', (d) => d.accept());
@@ -136,7 +137,7 @@ test('a separate tutorial tab stays readable while one working tab saves, withou
   ).toBeVisible();
   await expect(reader.getByRole('alert')).toHaveCount(0);
   await expect(reader.locator('#tutorial-add-work .tutorial-fields')).toHaveAttribute('open', '');
-  await expect(reader.locator('#tutorial-add-work dl')).toContainText('TPN');
+  await expect(reader.locator('#tutorial-add-work dl')).toContainText('JOB-DEMO');
   await reader
     .locator('#tutorial-add-work')
     .getByRole('button', { name: 'Open Work queue' })

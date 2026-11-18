@@ -16,7 +16,7 @@ import { preparationBookings, preparationChecks, PreparationPlan } from './prepa
 let store: Store;
 beforeEach(() => {
   localStorage.clear();
-  localStorage.setItem('bns-planner-v2', JSON.stringify(samplePlan()));
+  localStorage.setItem('lab-planner-fictional-v1', JSON.stringify(samplePlan()));
   store = new Store();
 });
 const rejection = (quantity = 1): Rejection => ({
@@ -35,7 +35,7 @@ describe('Precise handovers and later failures', () => {
     expect(store.saveAssignment({ ...s.assignments[1], samples: '' }, 'Clarify scope')).toBe(false);
     const legacy = structuredClone(s);
     delete legacy.assignments[1].samples;
-    localStorage.setItem('bns-planner-v2', JSON.stringify(legacy));
+    localStorage.setItem('lab-planner-fictional-v1', JSON.stringify(legacy));
     store = new Store();
     expect(store.issue(legacy.assignments[1].date, ['p3'])).toBe(false);
     expect(store.state().sheets).toEqual([]);
@@ -171,18 +171,14 @@ describe('Precise handovers and later failures', () => {
   });
 });
 
-describe('Source examples and historical context', () => {
-  it('distinguishes calibration-standard stability from short-lived QC preparation', () => {
-    const standard = store.state().standards.find((s) => s.id === 'std-carb')!;
-    expect(standard.shelfHours).toBe(9 * 7 * 24);
-    expect(standard.notes).toContain('§9.4.1');
-    expect(standard.steps.some((s) => s.name === 'Derivatise')).toBe(false);
-    expect(
-      store
-        .state()
-        .methods.find((m) => m.id === 'NTM0025a')!
-        .steps.some((s) => s.name === 'Timed derivatisation'),
-    ).toBe(true);
+describe('Fictional examples and historical context', () => {
+  it('keeps invented reference preparation separate from the demo method waiting step', () => {
+    const standard = store.state().standards.find((s) => s.id === 'std-amber')!;
+    expect(standard.shelfHours).toBe(240);
+    expect(standard.notes).toContain('Fictional demonstration only.');
+    expect(standard.steps.every((s) => s.handsOn === s.duration)).toBe(true);
+    const wait = store.state().methods.find((m) => m.id === 'DEMO-202')!.steps[1];
+    expect(wait).toMatchObject({ duration: 40, handsOn: 0, equipment: '' });
   });
   it('keeps performed recipes and preparations while refreshing unstarted plans', () => {
     const s = store.state();
@@ -236,17 +232,17 @@ describe('Source examples and historical context', () => {
     delete s.rejections;
     delete s.assignments[0].samples;
     const raw = JSON.stringify(s);
-    localStorage.setItem('bns-planner-v2', raw);
+    localStorage.setItem('lab-planner-fictional-v1', raw);
     const loaded = new Store();
     expect(loaded.state()).toEqual(s);
     expect(validOutput(loaded.state(), 'w1')).toBe(8);
-    expect(localStorage.getItem('bns-planner-v2')).toBe(raw);
+    expect(localStorage.getItem('lab-planner-fictional-v1')).toBe(raw);
   });
 });
 
 describe('Linked standard preparation', () => {
   const plan = (): PreparationPlan => ({
-    standardId: 'std-nic',
+    standardId: 'std-blue',
     personId: 'p2',
     date: addDays(store.state().week, 4),
     time: '08:00',
@@ -260,9 +256,9 @@ describe('Linked standard preparation', () => {
     expect(bookings).toHaveLength(3);
     expect(new Set(bookings.map((r) => r.preparationId)).size).toBe(1);
     expect(bookings.map((r) => [r.resourceId, r.time, r.minutes])).toEqual([
-      ['p2', '08:00', 45],
-      ['e7', '08:00', 45],
-      ['p2', '08:45', 15],
+      ['p2', '08:00', 20],
+      ['e7', '08:00', 20],
+      ['p2', '08:20', 10],
     ]);
     expect(store.state().standards[0].preparedAt).toBe(preparedAt);
     store.removeReservation(bookings[1].id);

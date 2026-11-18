@@ -163,8 +163,8 @@ export class Planner implements AfterViewInit, OnDestroy {
       const w = s.work.find((w) => w.id === a.workId)!,
         m = assignmentMethod(s, a);
       const warn = assignmentChecks(s, a).length > 0;
-      const color = a.repeatId ? '#fff1df' : w.methodId === 'NTM0086' ? '#edf3ff' : '#f2edfc';
-      const border = warn ? '#bc852f' : w.methodId === 'NTM0086' ? '#416fdb' : '#9372c6';
+      const color = a.repeatId ? '#fff1df' : w.methodId === 'DEMO-101' ? '#edf3ff' : '#f2edfc';
+      const border = warn ? '#bc852f' : w.methodId === 'DEMO-101' ? '#416fdb' : '#9372c6';
       const base = {
         backColor: color,
         borderColor: border,
@@ -192,7 +192,7 @@ export class Planner implements AfterViewInit, OnDestroy {
             end: localStamp(seg.end),
             text:
               this.zoom() === 'day'
-                ? `${w.project.replace('TPN-', '')} · ${seg.label}`
+                ? `${w.project} · ${seg.label}`
                 : `${warn ? '! ' : ''}${timeAt(seg.start)}–${timeAt(seg.end)} · ${w.project}\n${seg.label}`,
             toolTip: `${w.project} · ${timeAt(seg.start)}–${timeAt(seg.end)} · ${seg.label} · ${a.quantity} replicates`,
           });

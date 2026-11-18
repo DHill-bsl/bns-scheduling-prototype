@@ -17,7 +17,7 @@
     <div class="product-label">LAB PLANNING <span>PILOT</span></div>
     <div class="workspace">
       <span class="workspace-icon"><app-icon name="flask" /></span>
-      <div><strong>Pouch testing</strong><small>Team-leader scheduling</small></div>
+      <div><strong>Fictional lab demo</strong><small>Team-leader scheduling</small></div>
       <span class="workspace-dot"></span>
     </div>
     <span class="nav-caption">WORKSPACE</span>
@@ -37,7 +37,7 @@
     </nav>
     <div class="sidebar-bottom">
       <div class="local-indicator"><span></span> Saved in this browser</div>
-      <p>Example resources. Use fictional work.<br />No live connections.</p>
+      <p>Made-up data, recipes and timings.<br />No live connections.</p>
       <button mat-button (click)="reset()"><app-icon name="reset" />Reset demo</button>
     </div>
   </aside>
@@ -80,7 +80,7 @@
       }
       <div class="page-heading print-controls">
         <div>
-          <div class="eyebrow"><span class="eyebrow-line"></span> POUCH TESTING PILOT</div>
+          <div class="eyebrow"><span class="eyebrow-line"></span> FICTIONAL LAB DEMO</div>
           <h1>{{ title() }}</h1>
           <p>
             @switch (section()) {
@@ -275,8 +275,8 @@
               }
             </div>
             <div class="calendar-footer">
-              <span><i class="dot green"></i> Pouch dissolution</span
-              ><span><i class="dot purple"></i> Carbonyl testing</span
+              <span><i class="dot green"></i> Coating check</span
+              ><span><i class="dot purple"></i> Colour screening</span
               ><span><i class="dot grey"></i> Reserved / unavailable</span
               ><span class="warning-text">! Planning warning</span>
             </div>
@@ -315,7 +315,7 @@
                 @if (left(w) > 0) {
                   <article class="queue-card">
                     <div class="queue-card-top">
-                      <span class="method-tag" [class.purple-tag]="w.methodId === 'NTM0025a'">{{
+                      <span class="method-tag" [class.purple-tag]="w.methodId === 'DEMO-202'">{{
                         w.methodId
                       }}</span><span class="muted">{{ left(w) }} reps</span>
                     </div>
@@ -760,8 +760,8 @@
               </article>
             } @empty {
               <div class="empty">
-                No warnings found by the current checks. Confirm the approved method, sample
-                readiness and analyst qualifications before issuing work.
+                No warnings found by the current demo checks. This does not validate a real method,
+                sample readiness or analyst qualifications.
               </div>
             }
           </div>
@@ -1023,12 +1023,13 @@
             </ul>
             <h3>Not included</h3>
             <p>
-              Analyst accounts, stock, prices, billing, live LabHQ / Outlook / Veeva integrations
-              and automatic scheduling.
+              Analyst accounts, stock, prices, billing, live system integrations and automatic
+              scheduling.
             </p>
             <p class="help">
-              Use fictional data only. Reset clears work and bookings and restores the example
-              definitions and resources. This prototype must not control real laboratory work.
+              All included names, methods, recipes, timings and shelf lives are made up. Use
+              fictional data only. Reset clears work and bookings and restores the demo definitions
+              and resources. This prototype must not control real laboratory work.
             </p>
             <button mat-stroked-button (click)="reset()">Reset saved demo</button>
           </section>
@@ -1060,7 +1061,7 @@
         </div>
       }
       <footer class="app-footer print-controls">
-        <span>Broughton · Lab planning pilot</span
+        <span>Lab planning · Fictional demo</span
         ><span>Assignments do not count as completed work</span>
       </footer>
     </main>

@@ -37,9 +37,9 @@ describe('Tutorials', () => {
           prerequisites: 'Demo only',
           source: 'Tutorial example',
           steps: [
-            { name: 'Run', duration: 120, handsOn: 15, equipment: 'HPLC-UV' },
+            { name: 'Run', duration: 120, handsOn: 15, equipment: 'Optical reader' },
             { name: 'Wait', duration: 15, handsOn: 0, equipment: '' },
-            { name: 'Second run', duration: 60, handsOn: 0, equipment: 'HPLC-UV' },
+            { name: 'Second run', duration: 60, handsOn: 0, equipment: 'Optical reader' },
           ],
         },
         'methods',
@@ -72,7 +72,7 @@ describe('Tutorials', () => {
       workId: work.id,
       time: '09:00',
       quantity: 2,
-      equipment: { 'HPLC-UV': 'e3' },
+      equipment: { 'Optical reader': 'e3' },
     };
     expect(store.saveAssignment(a, '')).toBe(true);
     const periods = segments(store.state(), a);
@@ -88,7 +88,7 @@ describe('Tutorials', () => {
     await TestBed.configureTestingModule({ imports: [Tutorials] }).compileComponents();
     const fixture = TestBed.createComponent(Tutorials);
     fixture.detectChanges();
-    const before = localStorage.getItem('bns-planner-v2');
+    const before = localStorage.getItem('lab-planner-fictional-v1');
     const destinations: TutorialDestination[] = [];
     fixture.componentInstance.openScreen.subscribe((target) => destinations.push(target));
     fixture.nativeElement.querySelector('#tutorial-add-method button').click();
@@ -97,6 +97,6 @@ describe('Tutorials', () => {
       { section: 'definitions', tab: 'methods' },
       { section: 'definitions', tab: 'standards' },
     ]);
-    expect(localStorage.getItem('bns-planner-v2')).toBe(before);
+    expect(localStorage.getItem('lab-planner-fictional-v1')).toBe(before);
   });
 });

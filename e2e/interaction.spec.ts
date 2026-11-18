@@ -79,7 +79,7 @@ test('hourly equipment view, resource filtering and drag proposals', async ({ pa
   await page.getByRole('combobox', { name: 'Filter resources' }).selectOption('e3');
   await expect(page.locator('.assignment-panel tbody tr')).toHaveCount(2);
   await page.getByRole('combobox', { name: 'Calendar view' }).selectOption('day');
-  await expect(page.locator('app-planner')).toContainText('HPLC-UV sequence');
+  await expect(page.locator('app-planner')).toContainText('Read demo signals');
   await page.getByRole('button', { name: 'People', exact: true }).click();
   await page.getByRole('combobox', { name: 'Calendar view' }).selectOption('week');
   const event = page.locator('.scheduler_default_event').filter({ hasText: '08:30 · TPN-2401' });
@@ -93,7 +93,7 @@ test('hourly equipment view, resource filtering and drag proposals', async ({ pa
   await expect(page.getByRole('dialog')).toContainText('Maintenance');
   const saved = await page.evaluate(
     () =>
-      JSON.parse(localStorage.getItem('bns-planner-v2')!).assignments.find(
+      JSON.parse(localStorage.getItem('lab-planner-fictional-v1')!).assignments.find(
         (a: any) => a.id === 'a2',
       ).date,
   );
@@ -104,7 +104,7 @@ test('hourly equipment view, resource filtering and drag proposals', async ({ pa
   expect(
     await page.evaluate(
       () =>
-        JSON.parse(localStorage.getItem('bns-planner-v2')!).assignments.find(
+        JSON.parse(localStorage.getItem('lab-planner-fictional-v1')!).assignments.find(
           (a: any) => a.id === 'a2',
         ).date,
     ),
@@ -114,7 +114,7 @@ test('hourly equipment view, resource filtering and drag proposals', async ({ pa
 test('cancellation sheets and old versions remain available', async ({ page }) => {
   const date = await page.evaluate(
     () =>
-      JSON.parse(localStorage.getItem('bns-planner-v2')!).assignments.find(
+      JSON.parse(localStorage.getItem('lab-planner-fictional-v1')!).assignments.find(
         (a: any) => a.id === 'a2',
       ).date,
   );
@@ -141,7 +141,7 @@ test('cancellation sheets and old versions remain available', async ({ page }) =
   await expect(page.locator('.paper')).toContainText('No work is assigned.');
   await expect(page.locator('.paper')).toContainText('REVISED · v2');
   const old = await page.evaluate(
-    () => JSON.parse(localStorage.getItem('bns-planner-v2')!).sheets[0].id,
+    () => JSON.parse(localStorage.getItem('lab-planner-fictional-v1')!).sheets[0].id,
   );
   await page.getByRole('combobox', { name: 'Earlier copies', exact: true }).selectOption(old);
   await expect(page.locator('.paper')).toContainText('OUTDATED COPY — DO NOT USE.');

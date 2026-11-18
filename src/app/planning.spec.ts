@@ -30,12 +30,12 @@ describe('Planning rules', () => {
       a = s.assignments[0],
       parts = segments(s, a);
     const person = parts.filter((x) => x.resourceId === a.personId),
-      hplc = parts.find((x) => x.resourceId === 'e3')!;
-    expect(person.reduce((n, x) => n + (x.end - x.start) / 60000, 0)).toBe(135);
-    expect((hplc.end - hplc.start) / 60000).toBe(180);
+      reader = parts.find((x) => x.resourceId === 'e3')!;
+    expect(person.reduce((n, x) => n + (x.end - x.start) / 60000, 0)).toBe(80);
+    expect((reader.end - reader.start) / 60000).toBe(110);
     expect(
       person.some((x) =>
-        overlaps(x, { start: stamp(a.date, '11:00'), end: stamp(a.date, '12:00') }),
+        overlaps(x, { start: stamp(a.date, '10:00'), end: stamp(a.date, '11:00') }),
       ),
     ).toBe(false);
   });
@@ -75,10 +75,10 @@ describe('Planning rules', () => {
     a.quantity = 1.5;
     expect(assignmentChecks(s, a).some((c) => c.text.includes('whole quantity'))).toBe(true);
     a.quantity = 1;
-    a.equipment = { ...a.equipment, 'HPLC-UV': 'e1' };
-    expect(assignmentChecks(s, a).some((c) => c.text === 'Choose equipment for HPLC-UV.')).toBe(
-      true,
-    );
+    a.equipment = { ...a.equipment, 'Optical reader': 'e1' };
+    expect(
+      assignmentChecks(s, a).some((c) => c.text === 'Choose equipment for Optical reader.'),
+    ).toBe(true);
   });
   it('preserves the person and dates of performed attempts', () => {
     const s = seed(),

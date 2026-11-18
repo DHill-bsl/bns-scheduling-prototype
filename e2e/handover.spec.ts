@@ -7,7 +7,7 @@ async function nav(p: Page, name: string) {
   await expect(p.getByRole('heading', { level: 1, name, exact: true })).toBeVisible();
 }
 async function state(p: Page) {
-  return p.evaluate(() => JSON.parse(localStorage.getItem('bns-planner-v2')!));
+  return p.evaluate(() => JSON.parse(localStorage.getItem('lab-planner-fictional-v1')!));
 }
 function plus(date: string, n: number) {
   const d = new Date(date + 'T12:00:00');
@@ -158,7 +158,7 @@ test('handover: plan preparation from its recipe, check clashes and remove linke
     week = before.week;
   await nav(page, 'Methods & standards');
   await page.getByRole('button', { name: 'Standards', exact: true }).click();
-  await expect(page.getByText('L3 · 1512 hour shelf life', { exact: true })).toBeVisible();
+  await expect(page.getByText('L3 · 240 hour shelf life', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Plan preparation time', exact: true }).first().click();
   await dialog(page).getByRole('combobox', { name: 'Analyst', exact: true }).selectOption('p2');
   await dialog(page).getByLabel('Date', { exact: true }).fill(week);
@@ -180,7 +180,7 @@ test('handover: plan preparation from its recipe, check clashes and remove linke
   expect(linked).toHaveLength(3);
   expect(after.standards[0].preparedAt).toBe(before.standards[0].preparedAt);
   await oneSheet(page, plus(week, 4), 'Theo Brooks');
-  await expect(page.locator('.paper')).toContainText('Prepare Nicotine calibration standards');
+  await expect(page.locator('.paper')).toContainText('Prepare Blue reference set');
   await expect(page.locator('.paper')).toContainText('Balance B');
   await page.setViewportSize({ width: 1600, height: 1100 });
   await nav(page, 'Team planner');

@@ -7,7 +7,7 @@ async function nav(p: Page, name: string) {
   await expect(p.getByRole('heading', { level: 1, name, exact: true })).toBeVisible();
 }
 async function state(p: Page) {
-  return p.evaluate(() => JSON.parse(localStorage.getItem('bns-planner-v2')!));
+  return p.evaluate(() => JSON.parse(localStorage.getItem('lab-planner-fictional-v1')!));
 }
 async function save(p: Page) {
   const ack = dialog(p).getByRole('checkbox', { name: 'I have reviewed these warnings.' });

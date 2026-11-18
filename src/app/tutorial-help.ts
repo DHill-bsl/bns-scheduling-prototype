@@ -8,20 +8,20 @@ export interface TutorialHelp {
 
 export const tutorialHelp: Record<string, TutorialHelp> = {
   'add-work': {
-    spreadsheet: 'Like a Projects or Workload row: what needs testing, not who will do it.',
+    spreadsheet: 'Like a work-list row: what needs testing, not who will do it.',
     fields: [
-      { name: 'Project reference', meaning: 'The TPN from your spreadsheet.' },
+      { name: 'Project reference', meaning: 'A made-up project code, such as JOB-DEMO.' },
       { name: 'Client', meaning: 'Who the testing is for.' },
       {
         name: 'Products, batch, timepoint and samples',
         meaning:
-          'Which work this row covers. Include details previously kept in comments; the TPN alone is not enough.',
+          'Which work this row covers. Include batch, samples and replicate details; a project code alone is not enough.',
       },
-      { name: 'Method', meaning: 'The test code, like Methods Required or Test Method in Excel.' },
+      { name: 'Method', meaning: 'The demo method code selected for this work.' },
       {
         name: 'Required replicates',
         meaning:
-          'Total demand, like Total Reps. Calculate products × batches × replicates yourself. Do not add failure repeats.',
+          'Total demand. Calculate products × batches × replicates yourself. Do not add failure repeats.',
       },
       {
         name: 'Samples available from',
@@ -33,7 +33,7 @@ export const tutorialHelp: Record<string, TutorialHelp> = {
       },
       {
         name: 'Testing target',
-        meaning: 'When testing should finish, like Testing to be completed in Workload.',
+        meaning: 'When testing should finish.',
       },
       {
         name: 'Reporting deadline',
@@ -48,7 +48,7 @@ export const tutorialHelp: Record<string, TutorialHelp> = {
       {
         name: 'Known problem or missing prerequisite',
         meaning:
-          'A visible problem, like a Workload comment. It raises a warning, not an enforced stop.',
+          'A visible problem that needs attention. It raises a warning, not an enforced stop.',
       },
     ],
     automatic: [
@@ -61,12 +61,12 @@ export const tutorialHelp: Record<string, TutorialHelp> = {
     ],
   },
   'add-method': {
-    spreadsheet: 'Like TM info List or Task Source, with the test broken into timed steps.',
+    spreadsheet: 'Like a reusable task list, with each demo test broken into timed steps.',
     fields: [
       { name: 'Name', meaning: 'A short name for the test.' },
       {
         name: 'Method code',
-        meaning: 'Its unique reference, such as an NTM code. It cannot be changed after saving.',
+        meaning: 'Its unique demo reference, such as DEMO-101. It cannot be changed after saving.',
       },
       {
         name: 'Prerequisites',
@@ -111,7 +111,7 @@ export const tutorialHelp: Record<string, TutorialHelp> = {
       'A step starts at 09:00: 120 minutes total, 15 minutes hands-on. The machine is booked 09:00–11:00. The analyst is booked 09:00–09:15. Saving the method alone books neither.',
   },
   'add-standard': {
-    spreadsheet: 'Makes the standards-preparation work in Ops Resource Planner reusable.',
+    spreadsheet: 'Makes a demo reference-preparation task reusable.',
     fields: [
       { name: 'Name', meaning: 'Which standard this is.' },
       { name: 'Level', meaning: 'L1, L2 or L3. This does not decide who is qualified.' },
@@ -149,7 +149,7 @@ export const tutorialHelp: Record<string, TutorialHelp> = {
     ],
   },
   'assign-work': {
-    spreadsheet: 'Like a daily Task / Reps entry, with the equipment booking included.',
+    spreadsheet: 'Like a daily task-and-quantity entry, with the equipment booking included.',
     fields: [
       { name: 'Work', meaning: 'The job being assigned. Check its method, batch and timepoint.' },
       {
@@ -202,8 +202,7 @@ export const tutorialHelp: Record<string, TutorialHelp> = {
       'A 90-minute instrument step with 10 minutes hands-on books the machine for 90 minutes and the analyst for the first 10.',
   },
   calendar: {
-    spreadsheet:
-      'People replaces the person-by-day view. Equipment replaces Equipment Availability.',
+    spreadsheet: 'People shows a person-by-day plan. Equipment shows the same bookings by machine.',
     fields: [
       { name: 'People / Equipment', meaning: 'Two views of the same bookings.' },
       {
@@ -233,8 +232,7 @@ export const tutorialHelp: Record<string, TutorialHelp> = {
     ],
   },
   preparation: {
-    spreadsheet:
-      'Like booking preparation in Ops Resource Planner and the equipment sheet together.',
+    spreadsheet: 'Like booking preparation on a staff plan and equipment plan together.',
     fields: [
       { name: 'Selected standard', meaning: 'The card you opened supplies the preparation steps.' },
       { name: 'Analyst', meaning: 'Who will prepare the standard.' },
@@ -363,8 +361,7 @@ export const tutorialHelp: Record<string, TutorialHelp> = {
     ],
   },
   progress: {
-    spreadsheet:
-      'Like Tests Completed, Retests and completion comments—not the monthly planned Reps totals.',
+    spreadsheet: 'Like actual output and problem notes—not the quantities in a future plan.',
     fields: [
       {
         name: 'Record new attempts',
@@ -406,7 +403,7 @@ export const tutorialHelp: Record<string, TutorialHelp> = {
       '12 assigned; 8 successful; 2 failed. There are now 2 still pending, 2 repeats to assign and 8 valid output.',
   },
   rejection: {
-    spreadsheet: 'Like a later rejection in Sequence Tracking followed by an entry in Repeats.',
+    spreadsheet: 'Like recording a later failure, then adding a linked repeat task.',
     fields: [
       {
         name: 'Earlier successful update',
@@ -442,8 +439,7 @@ export const tutorialHelp: Record<string, TutorialHelp> = {
     ],
   },
   'follow-up': {
-    spreadsheet:
-      'Keeps unfinished testing separate from checking and reporting, as in Workload and Sequence Tracking.',
+    spreadsheet: 'Keeps unfinished testing separate from checking and reporting.',
     fields: [
       {
         name: 'Unfinished from earlier days',

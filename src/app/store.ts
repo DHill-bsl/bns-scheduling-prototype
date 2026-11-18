@@ -24,8 +24,8 @@ import {
   validOutput,
 } from './planning';
 import { PreparationPlan, preparationBookings, preparationChecks } from './preparation';
-// Start the empty-plan edition separately; leave earlier saved demos untouched.
-const KEY = 'bns-planner-v2';
+// Keep this fictional edition separate; never load or overwrite earlier saved plans.
+const KEY = 'lab-planner-fictional-v1';
 @Injectable({ providedIn: 'root' })
 export class Store {
   readonly error = signal('');

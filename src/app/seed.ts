@@ -1,4 +1,6 @@
 import { State, day, monday } from './models';
+
+// Every definition, duration, shelf life and resource below is invented for this demo.
 export function seed(): State {
   return {
     version: 1,
@@ -6,98 +8,83 @@ export function seed(): State {
     week: monday(day(new Date())),
     methods: [
       {
-        id: 'NTM0086',
-        name: 'Pouch dissolution',
+        id: 'DEMO-101',
+        name: 'Coating check',
         source:
-          'NTM0086 v8, §§8–9: USP-4 dissolution bath, timed fractions and HPLC-UV. Planning durations below are demo estimates, not validated throughput.',
+          'Fictional demonstration only. This invented recipe, equipment and all timings illustrate scheduling; they are not laboratory instructions.',
         prerequisites:
-          'Samples booked in; client timepoints confirmed; nicotine calibration standards ready; bath and HPLC checks complete.',
+          'Demo pieces labelled; blue reference set ready; example equipment available. These are fictional planning checks.',
         steps: [
-          { name: 'Prepare samples and set up', duration: 30, handsOn: 30, equipment: 'Balance' },
+          { name: 'Label demo pieces', duration: 20, handsOn: 20, equipment: 'Balance' },
           {
-            name: 'Dissolution and timed collections',
-            duration: 90,
-            handsOn: 60,
-            equipment: 'Dissolution bath',
+            name: 'Condition demo pieces',
+            duration: 75,
+            handsOn: 25,
+            equipment: 'Conditioning unit',
           },
-          { name: 'HPLC-UV sequence', duration: 180, handsOn: 15, equipment: 'HPLC-UV' },
-          { name: 'Clean up and record results', duration: 30, handsOn: 30, equipment: '' },
+          { name: 'Read demo signals', duration: 110, handsOn: 10, equipment: 'Optical reader' },
+          { name: 'Record demo observations', duration: 25, handsOn: 25, equipment: '' },
         ],
       },
       {
-        id: 'NTM0025a',
-        name: 'Carbonyl testing',
+        id: 'DEMO-202',
+        name: 'Colour screening',
         source:
-          'NTM0025a v12, §§8–9: LC-MS, 30 ±5 minute derivatisation; short refrigerated sample stability. Only the 30-minute wait is method-derived. Other durations are demo estimates.',
+          'Fictional demonstration only. The steps, waiting period, equipment and durations are made up, not taken from a test method.',
         prerequisites:
-          'Samples booked in; same-day blank and QC prepared; standards checked; calibrated timer available. Follow the controlled method for storage and timing.',
+          'Demo cards labelled; amber reference set ready; example scanner available. These are fictional planning checks.',
         steps: [
-          {
-            name: 'Prepare samples, blank and QC',
-            duration: 45,
-            handsOn: 45,
-            equipment: 'Balance',
-          },
-          { name: 'Timed derivatisation', duration: 30, handsOn: 0, equipment: '' },
-          { name: 'Vial and mix', duration: 15, handsOn: 15, equipment: 'Vortex mixer' },
-          { name: 'LC-MS sequence', duration: 180, handsOn: 15, equipment: 'LC-MS' },
-          { name: 'Clean up and record results', duration: 30, handsOn: 30, equipment: '' },
+          { name: 'Prepare demo cards', duration: 35, handsOn: 35, equipment: 'Balance' },
+          { name: 'Allow demo cards to settle', duration: 40, handsOn: 0, equipment: '' },
+          { name: 'Mix demo reference', duration: 20, handsOn: 10, equipment: 'Mixer' },
+          { name: 'Scan demo cards', duration: 95, handsOn: 10, equipment: 'Colour scanner' },
+          { name: 'File demo observations', duration: 20, handsOn: 20, equipment: '' },
         ],
       },
     ],
     standards: [
       {
-        id: 'std-nic',
-        name: 'Nicotine calibration standards',
+        id: 'std-blue',
+        name: 'Blue reference set',
         level: 'L2',
-        shelfHours: 168,
+        shelfHours: 72,
         preparedAt: '',
         notes:
-          '7-day refrigerated stability from NTM0086 §9.6 (2–8°C, protected from light). Level and preparation times are demo assumptions. Storage conditions must be checked outside this app.',
+          'Fictional demonstration only. The 72-hour shelf life, level and preparation steps are invented to illustrate readiness and expiry. There are no real storage or testing instructions.',
         steps: [
-          {
-            name: 'Prepare calibration dilutions',
-            duration: 45,
-            handsOn: 45,
-            equipment: 'Balance',
-          },
-          { name: 'Label and refrigerate', duration: 15, handsOn: 15, equipment: '' },
+          { name: 'Assemble demo references', duration: 20, handsOn: 20, equipment: 'Balance' },
+          { name: 'Label demo containers', duration: 10, handsOn: 10, equipment: '' },
         ],
       },
       {
-        id: 'std-carb',
-        name: 'Carbonyl calibration standards',
+        id: 'std-amber',
+        name: 'Amber reference set',
         level: 'L3',
-        shelfHours: 1512,
+        shelfHours: 240,
         preparedAt: '',
         notes:
-          'NTM0025a v12 §9.4.1: calibration standards use pre-derivatised stock. Stable for 9 weeks in screw-top vials sealed with parafilm at 2–8°C; aliquot to avoid repeated warming. Confirm against the current controlled method. Blank, QC and control samples are separate: prepare on the sample-preparation day (§9.5.1). Level and working times are demo assumptions.',
+          'Fictional demonstration only. The 240-hour shelf life, level and preparation steps are invented for this app. They do not describe any real reference material or storage conditions.',
         steps: [
-          {
-            name: 'Prepare calibration dilutions from pre-derivatised stock',
-            duration: 45,
-            handsOn: 45,
-            equipment: '',
-          },
-          { name: 'Mix, vial, label and refrigerate', duration: 15, handsOn: 15, equipment: '' },
+          { name: 'Arrange demo reference cards', duration: 25, handsOn: 25, equipment: '' },
+          { name: 'Label demo card set', duration: 10, handsOn: 10, equipment: '' },
         ],
       },
     ],
     people: [
-      { id: 'p1', name: 'Maya Reed', role: 'Pouch testing', methods: ['NTM0086', 'NTM0025a'] },
-      { id: 'p2', name: 'Theo Brooks', role: 'Wet chemistry', methods: ['NTM0086', 'NTM0025a'] },
-      { id: 'p3', name: 'Ella Chen', role: 'Pouch testing', methods: ['NTM0086'] },
-      { id: 'p4', name: 'Noah Patel', role: 'Analytical testing', methods: ['NTM0025a'] },
+      { id: 'p1', name: 'Maya Reed', role: 'Materials demo', methods: ['DEMO-101', 'DEMO-202'] },
+      { id: 'p2', name: 'Theo Brooks', role: 'Reference demo', methods: ['DEMO-101', 'DEMO-202'] },
+      { id: 'p3', name: 'Ella Chen', role: 'Materials demo', methods: ['DEMO-101'] },
+      { id: 'p4', name: 'Noah Patel', role: 'Screening demo', methods: ['DEMO-202'] },
     ],
     equipment: [
-      { id: 'e1', name: 'Dissolution bath A', type: 'Dissolution bath' },
-      { id: 'e2', name: 'Dissolution bath B', type: 'Dissolution bath' },
-      { id: 'e3', name: 'HPLC-UV A', type: 'HPLC-UV' },
-      { id: 'e4', name: 'HPLC-UV B', type: 'HPLC-UV' },
-      { id: 'e5', name: 'LC-MS A', type: 'LC-MS' },
+      { id: 'e1', name: 'Conditioning unit A', type: 'Conditioning unit' },
+      { id: 'e2', name: 'Conditioning unit B', type: 'Conditioning unit' },
+      { id: 'e3', name: 'Optical reader A', type: 'Optical reader' },
+      { id: 'e4', name: 'Optical reader B', type: 'Optical reader' },
+      { id: 'e5', name: 'Colour scanner A', type: 'Colour scanner' },
       { id: 'e6', name: 'Balance A', type: 'Balance' },
       { id: 'e7', name: 'Balance B', type: 'Balance' },
-      { id: 'e8', name: 'Vortex mixer A', type: 'Vortex mixer' },
+      { id: 'e8', name: 'Mixer A', type: 'Mixer' },
     ],
     work: [],
     assignments: [],

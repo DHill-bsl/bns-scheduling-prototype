@@ -6,7 +6,7 @@ import { validOutput, unassigned } from './planning';
 let store: Store;
 beforeEach(() => {
   localStorage.clear();
-  localStorage.setItem('bns-planner-v2', JSON.stringify(samplePlan()));
+  localStorage.setItem('lab-planner-fictional-v1', JSON.stringify(samplePlan()));
   store = new Store();
 });
 describe('Browser data service', () => {
@@ -94,9 +94,9 @@ describe('Browser data service', () => {
   });
   it('refuses to overwrite a newer tab revision', () => {
     store.saveWork({ ...store.state().work[0], id: 'new' });
-    const raw = JSON.parse(localStorage.getItem('bns-planner-v2')!);
+    const raw = JSON.parse(localStorage.getItem('lab-planner-fictional-v1')!);
     raw.revision++;
-    localStorage.setItem('bns-planner-v2', JSON.stringify(raw));
+    localStorage.setItem('lab-planner-fictional-v1', JSON.stringify(raw));
     expect(store.removeAssignment('a2')).toBe(false);
     expect(store.error()).toContain('another tab');
   });
@@ -114,10 +114,10 @@ describe('Browser data service', () => {
     expect(store.state().standards.every((s) => !s.preparedAt)).toBe(true);
   });
   it('shows an error for corrupt data rather than overwriting it', () => {
-    localStorage.setItem('bns-planner-v2', 'broken');
+    localStorage.setItem('lab-planner-fictional-v1', 'broken');
     const bad = new Store();
     expect(bad.error()).toContain('could not be read');
-    expect(localStorage.getItem('bns-planner-v2')).toBe('broken');
+    expect(localStorage.getItem('lab-planner-fictional-v1')).toBe('broken');
     bad.reset();
     expect(bad.error()).toBe('');
   });

@@ -20,7 +20,7 @@
             [(ngModel)]="work.project"
             required
             maxlength="60"
-            placeholder="e.g. TPN-2406"
+            placeholder="e.g. JOB-DEMO"
         /></label>
         <label
           >Client<input name="client" [(ngModel)]="work.client" required maxlength="80"
@@ -31,7 +31,7 @@
             [(ngModel)]="work.identity"
             required
             rows="2"
-            placeholder="e.g. Mint pouch, batch A, 3-month timepoint, samples M01–M12"
+            placeholder="e.g. Blue demo panels, batch A, second check, samples M01–M12"
           ></textarea>
         </label>
         <label
@@ -152,7 +152,7 @@
           [(ngModel)]="assignment.samples"
           required
           rows="2"
-          placeholder="e.g. M09–M12 / replicates 1–3; include fractions where needed"
+          placeholder="e.g. M09–M12 / replicates 1–3; use made-up sample IDs"
         ></textarea>
       </label>
       <p class="help">
@@ -210,8 +210,8 @@
         }
       </div>
       <p class="help">
-        {{ method.prerequisites }} The plan places hands-on time at the start of each step. Check
-        the approved method for timed collections and other interventions.
+        {{ method.prerequisites }} The demo places hands-on time at the start of each step. These
+        invented steps and timings must not be used as laboratory instructions.
       </p>
       <label
         >Instructions and handover<textarea
