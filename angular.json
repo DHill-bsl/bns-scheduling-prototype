@@ -51,6 +51,9 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "github-pages": {
+              "baseHref": "/bns-scheduling-prototype/"
             }
           },
           "defaultConfiguration": "production"

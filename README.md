@@ -4,6 +4,14 @@ A frontend-only Angular 22 application for exploring laboratory scheduling. Team
 
 **All included methods, preparation steps, timings, shelf lives, qualifications, people, equipment, clients and projects are invented. They are not laboratory instructions, validated capacities or real operational records. Use fictional data only.** The retained Broughton logo and favicon are branding, not a claim that the demo represents an approved process.
 
+## Hosted demo
+
+Open **https://dhill-bsl.github.io/bns-scheduling-prototype/**. The site is public and includes only the fictional demo defaults and retained branding. Use fictional data only; plans remain in each visitor's browser, not in shared storage.
+
+`.github/workflows/pages.yml` tests and builds the app, checks it under the repository URL path, and deploys `dist/lab-planner/browser/` through GitHub Pages. Successful pushes to `main` deploy automatically; **Actions → Deploy to GitHub Pages → Run workflow** can redeploy manually. Repository **Settings → Pages → Source** must remain **GitHub Actions**.
+
+The Pages build uses `/bns-scheduling-prototype/` as its base path. Local development still uses `/`. Hash links such as `#tutorials` work on direct entry and refresh without server-side routing rules.
+
 ## Run
 
 ```bash
@@ -81,7 +89,13 @@ npm run build
 npm test -- --watch=false
 npx playwright install chromium  # first time only
 npm run test:e2e
+npm run build:pages
+npm run test:pages
+# Check the deployed site in an isolated browser session:
+npm run test:pages -- https://dhill-bsl.github.io/bns-scheduling-prototype/
 ```
+
+The Pages smoke check serves the production output locally under its actual subpath, or checks the supplied hosted URL. It verifies assets, fictional definitions, direct hash entry/refresh, work creation, assignment, printing previews and browser persistence. It uses a fresh browser context and does not reset anyone else's plan.
 
 Unit tests cover fictional defaults, isolation from earlier browser editions, quantities, linked failures, rejection, splits, analyst/equipment time, preparation groups, historical snapshots, warnings, sheet versions and storage errors. The busy regression fixture in `testing/sample-plan.ts` reuses the fictional definitions and is not shipped in the running app.
 
