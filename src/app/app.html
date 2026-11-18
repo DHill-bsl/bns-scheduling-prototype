@@ -1,0 +1,1079 @@
+<a class="skip-link" href="#main" (click)="focusMain($event)">Skip to main content</a>
+<div class="app-shell">
+  <aside class="sidebar print-controls">
+    <a
+      class="brand"
+      href="#planner"
+      (click)="navigate('planner')"
+      aria-label="Broughton lab planning home"
+    >
+      <img
+        src="brand/broughton-logo.svg"
+        alt="Broughton — Testing, Consulting, Compliance"
+        width="188"
+        height="79"
+      />
+    </a>
+    <div class="product-label">LAB PLANNING <span>PILOT</span></div>
+    <div class="workspace">
+      <span class="workspace-icon"><app-icon name="flask" /></span>
+      <div><strong>Pouch testing</strong><small>Team-leader scheduling</small></div>
+      <span class="workspace-dot"></span>
+    </div>
+    <span class="nav-caption">WORKSPACE</span>
+    <nav aria-label="Main navigation">
+      @for (item of nav; track item.id) {
+        <a
+          [href]="'#' + item.id"
+          (click)="navigate(item.id)"
+          [class.active]="section() === item.id"
+          [attr.aria-current]="section() === item.id ? 'page' : null"
+          ><app-icon [name]="item.icon" /><span class="nav-label">{{ item.name }}</span>
+          @if (item.id === 'problems' && warnings().length) {
+            <span class="nav-count">{{ warnings().length }}</span>
+          }
+        </a>
+      }
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="local-indicator"><span></span> Saved in this browser</div>
+      <p>Example resources. Use fictional work.<br />No live connections.</p>
+      <button mat-button (click)="reset()"><app-icon name="reset" />Reset demo</button>
+    </div>
+  </aside>
+  <div class="workspace-main">
+    <header class="topbar print-controls">
+      <div>
+        <span class="muted">Lab planning</span><span class="crumb-slash">/</span
+        ><strong>{{ title() }}</strong>
+      </div>
+      <div class="topbar-right">
+        <span class="prototype-tag">PROTOTYPE</span
+        ><label class="leader-picker"
+          ><span class="avatar">TL</span
+          ><select
+            aria-label="Demo team leader"
+            [ngModel]="store.leader()"
+            (ngModelChange)="store.leader.set($event)"
+          >
+            <option>Alex Morgan</option>
+            <option>Robin Ellis</option>
+          </select></label
+        >
+      </div>
+    </header>
+    <main id="main" tabindex="-1">
+      @if (
+        section() === 'tutorials' && store.error().startsWith('The plan changed in another tab')
+      ) {
+        <div class="callout print-controls" role="status">
+          <strong>You can keep reading these tutorials.</strong> The plan was saved in another tab.
+          Continue editing in that working tab. Reload this tab before using it to edit; do not
+          reset the demo.
+          <button mat-button (click)="reload()">Reload this tab</button>
+        </div>
+      } @else if (store.error()) {
+        <div class="callout danger print-controls" role="alert">
+          {{ store.error() }} <button mat-button (click)="reload()">Reload</button
+          ><button mat-button (click)="reset()">Reset saved demo</button>
+        </div>
+      }
+      <div class="page-heading print-controls">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-line"></span> POUCH TESTING PILOT</div>
+          <h1>{{ title() }}</h1>
+          <p>
+            @switch (section()) {
+              @case ('planner') {
+                Assign work to analysts and equipment. Check bookings, change assignments and record
+                progress.
+              }
+              @case ('work') {
+                View required quantities, sample readiness and deadlines. Add work or assign the
+                remaining replicates.
+              }
+              @case ('problems') {
+                Assign repeats for failed attempts and review warnings about scheduled work.
+              }
+              @case ('definitions') {
+                Set up method steps, equipment and prerequisites. Record standard preparation,
+                levels and shelf life.
+              }
+              @case ('sheets') {
+                Preview assignments by date and analyst. Save an issued version and print it for
+                handover.
+              }
+              @case ('tutorials') {
+                Choose a task and follow the steps.
+              }
+              @case ('activity') {
+                View recorded changes, instructions for using the app and prototype limitations.
+              }
+            }
+          </p>
+        </div>
+        <div class="heading-actions">
+          @if (section() === 'planner') {
+            @if (store.state().work.length) {
+              <button mat-stroked-button (click)="navigate('sheets')">
+                <app-icon name="print" />Print work sheets</button
+              ><button mat-flat-button (click)="edit({ kind: 'assignment', date: date() })">
+                <app-icon name="plus" />Assign work
+              </button>
+            } @else {
+              <button mat-flat-button (click)="edit({ kind: 'work' })">
+                <app-icon name="plus" />Add your first work
+              </button>
+            }
+          }
+          @if (section() === 'work') {
+            <button mat-flat-button (click)="edit({ kind: 'work' })">
+              <app-icon name="plus" />Add work
+            </button>
+          }
+        </div>
+      </div>
+      @if (replacements() && section() !== 'sheets') {
+        <div class="callout amber print-controls">
+          <strong>{{ replacements() }} issued sheet(s) need replacing.</strong> The working plan has
+          changed. <button mat-button (click)="navigate('sheets')">Review work sheets →</button>
+        </div>
+      }
+      @if (section() === 'planner') {
+        @if (!store.state().work.length) {
+          <section class="panel definition-card" aria-labelledby="first-work-title">
+            <h2 id="first-work-title">Start with one job</h2>
+            <p>Add the work that needs testing. Then choose who will do it and when.</p>
+            <p class="help">
+              Example methods, standards, analysts and equipment are already included. Work is only
+              scheduled when you assign it.
+            </p>
+            <button mat-button (click)="navigate('tutorials')">Open Tutorials</button>
+          </section>
+        } @else if (!store.state().assignments.length) {
+          <div class="callout">
+            <strong>Ready to schedule.</strong> Your work is in the queue. Choose Assign work to
+            select an analyst, equipment and a time. Adding work does not book anything.
+          </div>
+        }
+        @if (unfinishedAssignments().length) {
+          <div class="callout amber">
+            <strong
+              >{{ unfinishedAssignments().length }} earlier assignment(s) have unattempted
+              work.</strong
+            >
+            They remain on their original dates.
+            <button mat-button (click)="navigate('problems')">Review unfinished work</button>
+          </div>
+        }
+        @if (store.state().work.length) {
+          <div class="stats-grid">
+            <button class="stat-card" (click)="navigate('work'); filter.set('unassigned')">
+              <span class="stat-label">Unassigned quantity <app-icon name="queue" /></span>
+              <span class="stat-value"
+                ><strong>{{ totalUnassigned() }}</strong
+                ><span>replicates unassigned</span></span
+              >
+              <span class="stat-link">Open work queue <app-icon name="arrow" /></span>
+            </button>
+            <button class="stat-card attention-stat" (click)="navigate('problems')">
+              <span class="stat-label">Planning warnings <app-icon name="alert" /></span>
+              <span class="stat-value"
+                ><strong>{{ warnings().length }}</strong
+                ><span>assignments with warnings</span></span
+              >
+              <span class="stat-link">View warnings <app-icon name="arrow" /></span>
+            </button>
+            <button class="stat-card" (click)="navigate('problems')">
+              <span class="stat-label">Repeat work <app-icon name="reset" /></span>
+              <span class="stat-value"
+                ><strong>{{ repeatRemaining() }}</strong
+                ><span>replicates to assign again</span></span
+              >
+              <span class="stat-link">View repeat work <app-icon name="arrow" /></span>
+            </button>
+          </div>
+        }
+        <div class="planning-layout">
+          <section class="panel schedule-panel" aria-label="Resource planner">
+            <div class="schedule-toolbar">
+              <div class="segmented">
+                <button
+                  [class.selected]="mode() === 'people'"
+                  (click)="mode.set('people'); resourceFilter.set('')"
+                >
+                  <app-icon name="people" />People</button
+                ><button
+                  [class.selected]="mode() === 'equipment'"
+                  (click)="mode.set('equipment'); resourceFilter.set('')"
+                >
+                  <app-icon name="equipment" />Equipment
+                </button>
+              </div>
+              <select
+                aria-label="Filter resources"
+                [ngModel]="resourceFilter()"
+                (ngModelChange)="resourceFilter.set($event)"
+              >
+                <option value="">
+                  {{ mode() === 'people' ? 'All analysts' : 'All equipment' }}
+                </option>
+                @for (
+                  r of mode() === 'people' ? store.state().people : store.state().equipment;
+                  track r.id
+                ) {
+                  <option [value]="r.id">{{ r.name }}</option>
+                }</select
+              ><span class="spacer"></span
+              ><button mat-button (click)="edit({ kind: 'reservation', date: date() })">
+                <app-icon name="plus" />Reserve time
+              </button>
+            </div>
+            <div class="date-toolbar">
+              <button mat-stroked-button (click)="today()">Today</button
+              ><button mat-icon-button aria-label="Previous period" (click)="move(-1)">
+                <app-icon name="left" /></button
+              ><button mat-icon-button aria-label="Next period" (click)="move(1)">
+                <app-icon name="right" /></button
+              ><strong
+                >{{ date() | date: 'd MMM' }}
+                @if (zoom() === 'week') {
+                  – {{ endDate() | date: 'd MMM yyyy' }}
+                } @else {
+                  {{ date() | date: 'yyyy' }}
+                }</strong
+              ><input
+                type="date"
+                aria-label="Planner date"
+                [ngModel]="date()"
+                (ngModelChange)="dateChange($event)"
+              /><span class="spacer"></span
+              ><select
+                aria-label="Calendar view"
+                [ngModel]="zoom()"
+                (ngModelChange)="setZoom($event)"
+              >
+                <option value="week">Week overview</option>
+                <option value="day">Day · hourly</option>
+              </select>
+            </div>
+            <div class="calendar-wrap">
+              @defer (on immediate) {
+                <app-planner
+                  [date]="date()"
+                  [mode]="mode()"
+                  [resourceFilter]="resourceFilter()"
+                  [zoom]="zoom()"
+                  (edit)="edit($event)"
+                />
+              } @placeholder {
+                <div class="empty" role="status">Loading the planner…</div>
+              } @error {
+                <div class="empty">
+                  The planner could not load. Use the assignment list below, or reload the page.
+                </div>
+              }
+            </div>
+            <div class="calendar-footer">
+              <span><i class="dot green"></i> Pouch dissolution</span
+              ><span><i class="dot purple"></i> Carbonyl testing</span
+              ><span><i class="dot grey"></i> Reserved / unavailable</span
+              ><span class="warning-text">! Planning warning</span>
+            </div>
+            <p class="calendar-help">
+              {{
+                zoom() === 'week'
+                  ? 'Week view shows assignments by day, not how long an analyst is busy. Select Day · hourly to see hands-on time.'
+                  : 'People view shows hands-on time. Equipment view shows when each instrument is booked, including running time.'
+              }}
+              Select an assignment to edit it.
+              {{
+                mode() === 'people'
+                  ? 'Drag an assignment or use Edit / move below. Review and save the change in the form.'
+                  : 'Changing an assignment updates its equipment bookings. Use the edit form to choose a different instrument.'
+              }}
+            </p>
+          </section>
+          <aside class="panel queue-panel">
+            <div class="queue-heading">
+              <div>
+                <span class="eyebrow">WORK QUEUE</span>
+                <h2>
+                  Unassigned work <span class="count">{{ totalUnassigned() }}</span>
+                </h2>
+              </div>
+              <button mat-icon-button aria-label="Add work" (click)="edit({ kind: 'work' })">
+                <app-icon name="plus" />
+              </button>
+            </div>
+            <p class="help">
+              Replicates without an assignment, including repeats. Choose how many to assign in the
+              form.
+            </p>
+            <div class="queue-cards">
+              @for (w of workList(); track w.id) {
+                @if (left(w) > 0) {
+                  <article class="queue-card">
+                    <div class="queue-card-top">
+                      <span class="method-tag" [class.purple-tag]="w.methodId === 'NTM0025a'">{{
+                        w.methodId
+                      }}</span><span class="muted">{{ left(w) }} reps</span>
+                    </div>
+                    <h3>{{ w.project }}</h3>
+                    <p>{{ w.client }}</p>
+                    <small>{{ method(w.methodId).name }}</small>
+                    <div class="queue-due">
+                      Target {{ w.testDue | date: 'EEE d MMM' }}
+                      @if (!w.ready) {
+                        <span class="warning-text">· Samples pending</span>
+                      }
+                    </div>
+                    <div class="queue-card-actions">
+                      <button mat-button (click)="edit({ kind: 'work', id: w.id })">Details</button>
+                      @if (originalLeft(w) > 0) {
+                        <button
+                          mat-stroked-button
+                          (click)="edit({ kind: 'assignment', workId: w.id, date: date() })"
+                        >
+                          Assign {{ originalLeft(w) }}
+                        </button>
+                      } @else {
+                        <button mat-stroked-button (click)="navigate('problems')">
+                          Assign repeat
+                        </button>
+                      }
+                    </div>
+                  </article>
+                }
+              }
+            </div>
+            @if (!totalUnassigned()) {
+              <div class="empty">
+                @if (store.state().work.length) {
+                  All work has an assignment. Check the plan before issuing sheets.
+                } @else {
+                  No work yet. Add your first job to get started.
+                }
+              </div>
+            }
+            <button mat-button class="queue-all" (click)="navigate('work')">
+              View all work<app-icon name="arrow" />
+            </button>
+          </aside>
+        </div>
+        <section class="panel assignment-panel">
+          <div class="section-heading">
+            <div>
+              <h2>Assignments this {{ zoom() === 'week' ? 'week' : 'day' }}</h2>
+              <p class="help">
+                Edit an assignment, split unfinished work between people or dates, or record results
+                under Progress.
+              </p>
+            </div>
+            <span class="badge">{{ assignments().length }} assignments</span>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Work / analyst</th>
+                  <th>When</th>
+                  <th>Quantity</th>
+                  <th>Plan check</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (a of assignments(); track a.id) {
+                  <tr>
+                    <td>
+                      <strong>{{ work(a.workId).project }}</strong>
+                      <span class="method-small">{{ work(a.workId).methodId }}</span><small
+                        >{{ person(a.personId) }}
+                        @if (a.repeatId) {
+                          · Repeat
+                        }
+                      </small>
+                    </td>
+                    <td>
+                      {{ a.date | date: 'EEE d MMM' }}<small>{{ a.time }} start</small>
+                    </td>
+                    <td>
+                      {{ a.quantity }} assigned<small>{{ remaining(a) }} not yet attempted</small>
+                    </td>
+                    <td>
+                      <span class="badge" [class.amber]="checks(a).length > 0">{{
+                        checks(a).length
+                          ? checks(a).length + (checks(a).length === 1 ? ' warning' : ' warnings')
+                          : 'No known clashes'
+                      }}</span>
+                    </td>
+                    <td>
+                      <div class="table-actions">
+                        <button mat-button (click)="edit({ kind: 'assignment', id: a.id })">
+                          Edit / move</button
+                        ><button
+                          mat-button
+                          (click)="edit({ kind: 'assignment', splitFrom: a.id })"
+                          [disabled]="remaining(a) < 1 || a.quantity < 2"
+                        >
+                          Split</button
+                        ><button mat-stroked-button (click)="edit({ kind: 'progress', id: a.id })">
+                          Progress
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="5" class="empty">
+                      {{
+                        store.state().work.length
+                          ? 'No assignments for these dates. Select Assign work to add one.'
+                          : 'No assignments yet. Add work first, then assign it here.'
+                      }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <details class="panel reserved-panel">
+          <summary>Reserved time · {{ reservations().length }} periods</summary>
+          <div class="reservation-list">
+            @for (r of reservations(); track r.id) {
+              <div>
+                <span
+                  ><strong>{{ r.label }}</strong
+                  ><small
+                    >{{ person(r.resourceId) }} · {{ r.date | date: 'EEE d MMM' }} · {{ r.time }}–{{
+                      timeAt(stamp(r.date, r.time) + r.minutes * 60000)
+                    }}</small
+                  ></span
+                ><button mat-button (click)="removeReservation(r.id)">
+                  {{ r.preparationId ? 'Remove preparation bookings' : 'Remove' }}
+                </button>
+              </div>
+            } @empty {
+              <p>No reserved periods in this view.</p>
+            }
+          </div>
+        </details>
+      }
+      @if (section() === 'work') {
+        <section class="panel">
+          <div class="filter-toolbar">
+            <label class="search-field"
+              ><app-icon name="search" />
+              <input
+                type="search"
+                aria-label="Search work"
+                placeholder="Search project, client or samples…"
+                [ngModel]="search()"
+                (ngModelChange)="search.set($event)" /></label
+            ><select
+              aria-label="Filter work"
+              [ngModel]="filter()"
+              (ngModelChange)="filter.set($event)"
+            >
+              <option value="all">All work</option>
+              <option value="unassigned">Needs an assignment</option>
+              <option value="not-ready">Readiness warnings</option>
+              <option value="complete">All output performed</option>
+              <option value="unfinished">Unfinished from earlier days</option>
+              <option value="reporting">Awaiting checking / reporting</option>
+              <option value="late-report">Reporting deadline passed</option></select
+            ><span class="spacer"></span
+            ><span class="muted">{{ workList().length }} work items · earliest target first</span>
+          </div>
+          <div class="table-scroll">
+            <table class="work-table">
+              <thead>
+                <tr>
+                  <th>Project / work</th>
+                  <th>Method / readiness</th>
+                  <th>Quantity</th>
+                  <th>Deadlines</th>
+                  <th>Progress</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (w of workList(); track w.id) {
+                  <tr>
+                    <td>
+                      <strong>{{ w.project }}</strong><small>{{ w.client }}</small>
+                      <p class="identity">{{ w.identity }}</p>
+                    </td>
+                    <td>
+                      <span class="method-tag">{{ w.methodId }}</span><small
+                        >{{ w.ready ? 'Samples ready' : 'Samples pending' }} ·
+                        {{ w.readyDate | date: 'd MMM' }}</small
+                      >
+                      @if (risk(w)) {
+                        <small class="warning-text">{{ risk(w) }}</small>
+                      }
+                      @if (w.blocker) {
+                        <small>{{ w.blocker }}</small>
+                      }
+                    </td>
+                    <td>
+                      <strong>{{ w.quantity }} required</strong
+                      ><small>{{ left(w) }} unassigned · {{ pending(w) }} pending</small
+                      ><small>{{ output(w) }} valid output</small
+                      ><progress
+                        [value]="output(w)"
+                        [max]="w.quantity"
+                        [attr.aria-label]="w.project + ' valid output'"
+                      ></progress>
+                    </td>
+                    <td>
+                      {{ w.testDue | date: 'd MMM' }} testing<small
+                        >{{ w.reportDue | date: 'd MMM' }} reporting</small
+                      >
+                    </td>
+                    <td class="progress-cell">
+                      <span class="badge" [class.green-tag]="w.stage === 'Reported'">{{
+                        displayStage(w)
+                      }}</span>
+                      @if (output(w) >= w.quantity && w.stage !== 'Reported') {
+                        <button mat-button (click)="stage(w)">
+                          Mark {{ nextStage(w) | lowercase }}
+                        </button>
+                      }
+                    </td>
+                    <td>
+                      <div class="stack-actions">
+                        <button mat-button (click)="edit({ kind: 'work', id: w.id })">
+                          Details / readiness
+                        </button>
+                        <button mat-button (click)="showWorkAssignments(w.id)">
+                          Assignments / progress</button
+                        ><button
+                          mat-stroked-button
+                          (click)="edit({ kind: 'assignment', workId: w.id, date: date() })"
+                          [disabled]="originalLeft(w) < 1"
+                        >
+                          Assign work
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6" class="empty">
+                      @if (store.state().work.length) {
+                        <h3>No work matches</h3>
+                        <p>Try a different search or filter.</p>
+                        <button mat-button (click)="search.set(''); filter.set('all')">
+                          Clear filters
+                        </button>
+                      } @else {
+                        <h3>No work yet</h3>
+                        <p>
+                          Use Add work to enter your first job. You will choose its schedule next.
+                        </p>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+        @if (focusedWork()) {
+          <section
+            class="panel definition-card"
+            id="work-assignments"
+            tabindex="-1"
+            aria-label="Work assignments"
+          >
+            <div class="section-heading">
+              <div>
+                <h2>{{ work(focusedWork()).project }} · assignments and progress</h2>
+                <p>
+                  All dates. Open Progress to record attempts or reject output after a later check.
+                </p>
+              </div>
+              <button mat-button (click)="focusedWork.set('')">Close assignment list</button>
+            </div>
+            @for (a of workAssignments(); track a.id) {
+              <article class="history-item">
+                <strong
+                  >{{ person(a.personId) }} · {{ a.date | date: 'EEE d MMM yyyy' }} ·
+                  {{ a.time }}</strong
+                >
+                <p>
+                  {{ a.quantity }} assigned · {{ remaining(a) }} not yet attempted{{
+                    a.repeatId ? ' · Repeat' : ''
+                  }}
+                </p>
+                <p>{{ a.samples || 'Assigned IDs not recorded — check the original handover.' }}</p>
+                <div class="table-actions">
+                  <button mat-button (click)="edit({ kind: 'assignment', id: a.id })">
+                    Edit / move
+                  </button>
+                  <button
+                    mat-button
+                    (click)="edit({ kind: 'assignment', splitFrom: a.id })"
+                    [disabled]="remaining(a) < 1 || a.quantity < 2"
+                  >
+                    Split
+                  </button>
+                  <button mat-stroked-button (click)="edit({ kind: 'progress', id: a.id })">
+                    Progress
+                  </button>
+                </div>
+              </article>
+            } @empty {
+              <p>No assignments yet. Use Assign work on this work item.</p>
+            }
+          </section>
+        }
+        <div class="callout">
+          Required quantity is the number of replicates requested. Pending replicates are assigned
+          but have no result recorded. Valid output counts successful replicates only. A failed
+          attempt creates a repeat without increasing the required quantity.
+        </div>
+      }
+      @if (section() === 'problems') {
+        <section class="panel">
+          <div class="section-heading">
+            <div>
+              <h2>Unfinished from earlier days</h2>
+              <p class="help">
+                These assignments still have unattempted replicates. Record returned progress, or
+                split unfinished work into a new date. Nothing moves automatically.
+              </p>
+            </div>
+            <span class="badge">{{ unfinishedAssignments().length }} assignments</span>
+          </div>
+          <div class="warning-list">
+            @for (a of unfinishedAssignments(); track a.id) {
+              <article>
+                <div>
+                  <strong>{{ work(a.workId).project }} · {{ person(a.personId) }}</strong>
+                  <p>{{ a.date | date: 'EEE d MMM' }} · {{ remaining(a) }} not yet attempted</p>
+                  <small>{{ a.samples || 'Assigned IDs not recorded' }}</small>
+                </div>
+                <div class="table-actions">
+                  <button mat-button (click)="edit({ kind: 'assignment', id: a.id })">
+                    Edit / move
+                  </button>
+                  <button
+                    mat-button
+                    (click)="edit({ kind: 'assignment', splitFrom: a.id })"
+                    [disabled]="a.quantity < 2"
+                  >
+                    Split
+                  </button>
+                  <button mat-stroked-button (click)="edit({ kind: 'progress', id: a.id })">
+                    Progress
+                  </button>
+                </div>
+              </article>
+            } @empty {
+              <p class="empty">No unattempted work on earlier dates.</p>
+            }
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-heading">
+            <div>
+              <h2>Repeat queue</h2>
+              <p class="help">
+                Each repeat lists the failed samples, reason and quantity still to assign. Open
+                Original attempt to view the recorded progress.
+              </p>
+            </div>
+            <span class="badge amber">{{ repeatRemaining() }} to assign</span>
+          </div>
+          <div class="repeat-grid">
+            @for (r of store.state().repeats; track r.id) {
+              <article class="repeat-card">
+                <div class="queue-card-top">
+                  <strong>{{ work(r.workId).project }}</strong><span class="badge amber"
+                    >{{ r.quantity }} failed</span
+                  >
+                </div>
+                <h3>{{ r.reason }}</h3>
+                <p>{{ r.samples }}</p>
+                <p class="help">
+                  {{
+                    r.fresh
+                      ? 'Fresh preparation needed'
+                      : 'Check whether existing preparation can be used'
+                  }}
+                </p>
+                <div class="repeat-counts">
+                  <span>{{ repeatLeft(r.workId, r.id) }} unassigned</span
+                  ><span>{{ repeatValid(r.id) }} valid repeat output</span>
+                </div>
+                <div class="table-actions">
+                  <button mat-button (click)="edit({ kind: 'progress', id: r.assignmentId })">
+                    Original attempt</button
+                  ><button
+                    mat-flat-button
+                    (click)="
+                      edit({ kind: 'assignment', workId: r.workId, repeatId: r.id, date: date() })
+                    "
+                    [disabled]="repeatLeft(r.workId, r.id) < 1"
+                  >
+                    Assign repeat
+                  </button>
+                </div>
+              </article>
+            } @empty {
+              <div class="empty">
+                No repeats. Record a failed attempt from an assignment's Progress button to add one.
+              </div>
+            }
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-heading">
+            <div>
+              <h2>Planning warnings</h2>
+              <p class="help">
+                These assignments have timing, readiness, qualification or booking warnings. Open an
+                assignment to review them before saving changes. Laboratory rules for blocking work
+                are not yet confirmed.
+              </p>
+            </div>
+          </div>
+          <div class="warning-list">
+            @for (item of warnings(); track item.a.id) {
+              <article>
+                <div>
+                  <strong>{{ work(item.a.workId).project }} · {{ person(item.a.personId) }}</strong
+                  ><small>{{ item.a.date | date: 'EEE d MMM' }} · {{ item.a.time }}</small>
+                  <ul>
+                    @for (c of item.checks; track c.text) {
+                      <li>{{ c.text }}</li>
+                    }
+                  </ul>
+                </div>
+                <button mat-stroked-button (click)="edit({ kind: 'assignment', id: item.a.id })">
+                  Review assignment
+                </button>
+              </article>
+            } @empty {
+              <div class="empty">
+                No warnings found by the current checks. Confirm the approved method, sample
+                readiness and analyst qualifications before issuing work.
+              </div>
+            }
+          </div>
+        </section>
+      }
+      @if (section() === 'definitions') {
+        <div class="toolbar definition-toolbar">
+          <div class="segmented">
+            <button
+              [class.selected]="definitionTab === 'methods'"
+              (click)="definitionTab = 'methods'"
+            >
+              Test methods</button
+            ><button
+              [class.selected]="definitionTab === 'standards'"
+              (click)="definitionTab = 'standards'"
+            >
+              Standards</button
+            ><button
+              [class.selected]="definitionTab === 'resources'"
+              (click)="definitionTab = 'resources'"
+            >
+              People & equipment
+            </button>
+          </div>
+          <span class="spacer"></span>
+          @if (definitionTab !== 'resources') {
+            <button
+              mat-flat-button
+              (click)="
+                edit({
+                  kind: 'definition',
+                  definitionKind: definitionTab === 'methods' ? 'methods' : 'standards',
+                })
+              "
+            >
+              <app-icon name="plus" />Add {{ definitionTab === 'methods' ? 'method' : 'standard' }}
+            </button>
+          }
+        </div>
+        @if (definitionTab === 'methods') {
+          <p class="help">
+            Method steps set assignment times and equipment bookings. Hands-on time is when an
+            analyst is needed. Total time also includes instrument running or waiting.
+          </p>
+          <div class="definition-grid">
+            @for (m of store.state().methods; track m.id) {
+              <article class="panel definition-card">
+                <div class="queue-card-top">
+                  <span class="method-tag">{{ m.id }}</span><button
+                    mat-button
+                    (click)="edit({ kind: 'definition', id: m.id, definitionKind: 'methods' })"
+                  >
+                    Edit method
+                  </button>
+                </div>
+                <h2>{{ m.name }}</h2>
+                <p class="help">{{ m.source }}</p>
+                <div class="recipe">
+                  @for (st of m.steps; track $index) {
+                    <div>
+                      <span class="step-number">{{ $index + 1 }}</span>
+                      <div>
+                        <strong>{{ st.name }}</strong><small
+                          >{{ st.handsOn }} min hands-on / {{ st.duration }} min total ·
+                          {{ st.equipment || 'No equipment booking' }}</small
+                        >
+                      </div>
+                    </div>
+                  }
+                </div>
+                <h3>Before starting</h3>
+                <p>{{ m.prerequisites }}</p>
+              </article>
+            }
+          </div>
+        }
+        @if (definitionTab === 'standards') {
+          <p class="help">
+            Plan preparation time books the recipe's analyst time and equipment together. This is a
+            plan, not proof of readiness. Record actual completion separately and check storage
+            conditions before using the standard.
+          </p>
+          <div class="definition-grid">
+            @for (st of store.state().standards; track st.id) {
+              <article class="panel definition-card">
+                <div class="queue-card-top">
+                  <span class="badge">{{ st.level }} · {{ st.shelfHours }} hour shelf life</span
+                  ><button
+                    mat-button
+                    (click)="edit({ kind: 'definition', id: st.id, definitionKind: 'standards' })"
+                  >
+                    Edit / record preparation
+                  </button>
+                </div>
+                <h2>{{ st.name }}</h2>
+                <p>{{ st.notes }}</p>
+                <div class="recipe">
+                  @for (step of st.steps; track $index) {
+                    <div>
+                      <span class="step-number">{{ $index + 1 }}</span>
+                      <div>
+                        <strong>{{ step.name }}</strong><small
+                          >{{ step.handsOn }} min hands-on / {{ step.duration }} min total ·
+                          {{ step.equipment || 'No equipment booking' }}</small
+                        >
+                      </div>
+                    </div>
+                  }
+                </div>
+                <div class="callout">
+                  <strong>Preparation recorded</strong><br />{{
+                    st.preparedAt ? (st.preparedAt | date: 'd MMM yyyy, HH:mm') : 'Not recorded'
+                  }}<br /><small
+                    >Levels do not restrict analyst assignments in this prototype. Check the
+                    standard's identity and storage conditions before use.</small
+                  >
+                </div>
+                <button
+                  mat-stroked-button
+                  (click)="edit({ kind: 'preparation', standardId: st.id, date: date() })"
+                >
+                  Plan preparation time
+                </button>
+              </article>
+            }
+          </div>
+        }
+        @if (definitionTab === 'resources') {
+          <div class="definition-grid">
+            <section class="panel definition-card">
+              <h2>Analysts</h2>
+              <p class="help">
+                These are example analysts. Working hours are Monday–Friday, 08:00–17:00. Listed
+                methods are assumed qualifications, not verified training records. Reserve time for
+                leave or other duties.
+              </p>
+              @for (p of store.state().people; track p.id) {
+                <div class="resource-row">
+                  <span class="avatar">{{ p.name.slice(0, 1) }}</span>
+                  <div>
+                    <strong>{{ p.name }}</strong><small
+                      >{{ p.role }} · {{ p.methods.join(', ') }}</small
+                    >
+                  </div>
+                  <button
+                    mat-button
+                    (click)="edit({ kind: 'reservation', personId: p.id, date: date() })"
+                  >
+                    Reserve time
+                  </button>
+                </div>
+              }
+            </section>
+            <section class="panel definition-card">
+              <h2>Shared equipment</h2>
+              <p class="help">
+                These are example instruments. Reserve time for maintenance or other bookings.
+                Overlapping bookings raise warnings; actual equipment capacity has not been
+                confirmed.
+              </p>
+              @for (e of store.state().equipment; track e.id) {
+                <div class="resource-row">
+                  <div>
+                    <strong>{{ e.name }}</strong><small>{{ e.type }}</small>
+                  </div>
+                  <button
+                    mat-button
+                    (click)="edit({ kind: 'reservation', personId: e.id, date: date() })"
+                  >
+                    Reserve
+                  </button>
+                </div>
+              }
+            </section>
+          </div>
+        }
+      }
+      @if (section() === 'sheets') {
+        @defer (on immediate) {
+          <app-sheets />
+        } @placeholder {
+          <div class="empty" role="status">Loading work sheets…</div>
+        } @error {
+          <div class="callout danger">
+            Work sheets could not load. Reload the page and try again.
+          </div>
+        }
+      }
+      @if (section() === 'tutorials') {
+        @defer (on immediate) {
+          <app-tutorials (openScreen)="openTutorialScreen($event)" />
+        } @placeholder {
+          <div class="empty" role="status">Loading tutorials…</div>
+        } @error {
+          <div class="callout danger">Tutorials could not load. Reload the page and try again.</div>
+        }
+      }
+      @if (section() === 'activity') {
+        <div class="definition-grid">
+          <section class="panel definition-card">
+            <h2>How to use the app</h2>
+            <p>
+              For numbered instructions on methods, work, assignments and handovers, open the
+              Tutorials page.
+            </p>
+            <button mat-stroked-button (click)="navigate('tutorials')">Open Tutorials</button>
+            <ol class="walkthrough">
+              <li>
+                <strong>Add work.</strong> In Work queue, enter the method, required quantity,
+                batch, samples and timepoint. Set sample readiness, the testing target and the
+                reporting deadline.
+              </li>
+              <li>
+                <strong>Assign work.</strong> Choose an analyst, date, start time, quantity and
+                equipment. Resolve blocked items and review warnings before saving.
+              </li>
+              <li>
+                <strong>Issue and print sheets.</strong> In Work sheets, select the date and
+                analysts. Issue a saved version, then print it. Analysts use the printed sheets;
+                they do not log in.
+              </li>
+              <li>
+                <strong>Record progress.</strong> Open Assignments / progress from Work queue, or
+                use an assignment's Progress button. Enter new successful and failed attempts from
+                the returned sheet. Use Reject recorded output for a later failure; the earlier
+                record stays visible and a repeat is created.
+              </li>
+              <li>
+                <strong>Update assignments.</strong> Split unfinished work or assign a repeat from
+                Problems & repeats. If an issued sheet is affected, issue and print a replacement.
+              </li>
+            </ol>
+            <h3>Prototype assumptions</h3>
+            <ul>
+              <li>
+                The laboratory must confirm step durations, hands-on timing, levels, qualifications
+                and capacity. Changing an assigned quantity does not change the step durations.
+              </li>
+              <li>
+                Timing, readiness, qualification and booking problems raise warnings. Missing
+                required fields, invalid quantities and incompatible equipment block saving.
+              </li>
+              <li>
+                Valid output counts successful replicates. Once all required output is recorded, the
+                team leader marks the work checked, approved and reported separately. These statuses
+                are not electronic signatures.
+              </li>
+              <li>
+                Each standard stores one current preparation date and time. Performed assignments
+                retain their recorded recipe and standard context. Preparation bookings do not mark
+                a standard ready. Separate batches, stock quantities and consumption are not
+                tracked.
+              </li>
+              <li>
+                Data is saved only in this browser, not shared with other users. Changes in another
+                tab prompt a reload. This does not provide reliable multi-user editing.
+              </li>
+            </ul>
+            <h3>Not included</h3>
+            <p>
+              Analyst accounts, stock, prices, billing, live LabHQ / Outlook / Veeva integrations
+              and automatic scheduling.
+            </p>
+            <p class="help">
+              Use fictional data only. Reset clears work and bookings and restores the example
+              definitions and resources. This prototype must not control real laboratory work.
+            </p>
+            <button mat-stroked-button (click)="reset()">Reset saved demo</button>
+          </section>
+          <section class="panel definition-card">
+            <h2>Recent changes</h2>
+            <p class="help">
+              This list records saved changes, their time and the selected team-leader name. The
+              name selector is not a login, and this history is not a regulated audit trail.
+            </p>
+            <div class="activity-list">
+              @for (a of store.state().audit; track $index) {
+                <article>
+                  <span class="activity-dot"></span>
+                  <div>
+                    <strong>{{ a.message }}</strong>
+                    @if (a.details?.length) {
+                      <ul>
+                        @for (detail of a.details; track $index) {
+                          <li>{{ detail }}</li>
+                        }
+                      </ul>
+                    }
+                    <small>{{ a.by }} · {{ a.at | date: 'd MMM yyyy, HH:mm' }}</small>
+                  </div>
+                </article>
+              }
+            </div>
+          </section>
+        </div>
+      }
+      <footer class="app-footer print-controls">
+        <span>Broughton · Lab planning pilot</span
+        ><span>Assignments do not count as completed work</span>
+      </footer>
+    </main>
+  </div>
+</div>
+@if (store.notice()) {
+  <div class="toast print-controls" role="status">
+    <span>{{ store.notice() }}</span><button
+      mat-icon-button
+      aria-label="Dismiss message"
+      (click)="store.notice.set('')"
+    >
+      <app-icon name="close" />
+    </button>
+  </div>
+}

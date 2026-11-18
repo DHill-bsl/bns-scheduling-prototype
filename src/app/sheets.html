@@ -1,0 +1,301 @@
+<div class="panel print-controls">
+  <div class="toolbar sheet-toolbar">
+    <label
+      >Work-sheet date<input
+        type="date"
+        [(ngModel)]="date"
+        (ngModelChange)="versions = {}; acknowledged = false"
+        aria-label="Work-sheet date"
+    /></label>
+    <div class="segmented">
+      <button [class.selected]="mode === 'working'" (click)="mode = 'working'">Working plan</button
+      ><button [class.selected]="mode === 'issued'" (click)="mode = 'issued'">Issued copies</button>
+    </div>
+    <div class="sheet-actions">
+      <button mat-stroked-button (click)="print()" [disabled]="!hasWork">
+        <app-icon name="print" />Print {{ mode === 'working' ? 'draft' : 'work sheets' }}</button
+      ><button
+        mat-flat-button
+        (click)="issue()"
+        [disabled]="!hasWork || (warnings.length > 0 && !acknowledged)"
+      >
+        <app-icon name="check" />Issue work sheets
+      </button>
+    </div>
+  </div>
+  <div class="analyst-picks">
+    @for (p of store.state().people; track p.id) {
+      <label class="check"
+        ><input
+          type="checkbox"
+          [checked]="selected.includes(p.id)"
+          (change)="toggle(p.id); acknowledged = false"
+        />{{ p.name }}</label
+      >
+    }
+  </div>
+  @if (warnings.length) {
+    <details class="callout amber">
+      <summary>{{ warnings.length }} planning warnings to review before issuing</summary>
+      <ul>
+        @for (w of warnings; track $index) {
+          <li>{{ w }}</li>
+        }
+      </ul>
+    </details>
+    <label class="check"
+      ><input type="checkbox" [(ngModel)]="acknowledged" /> I have reviewed the warnings and will
+      confirm readiness before work starts.</label
+    >
+  }
+  <p class="help">
+    Working plan shows current assignments. Issue work sheets saves a version under Issued copies.
+    If the plan changes, issue and print a replacement; existing printed copies do not change.
+  </p>
+</div>
+@if (!selected.length) {
+  <div class="empty">Choose at least one analyst to preview their work sheet.</div>
+}
+@for (p of people; track p.id) {
+  @if (lines(p.id).length || reservations(p.id).length || sheet(p.id)) {
+    <div class="sheet-status print-controls">
+      <div>
+        @if (store.latestSheet(date, p.id); as latest) {
+          <span class="badge" [class.amber]="store.changedSheet(latest)"
+            >{{ store.changedSheet(latest) ? 'Replacement needed' : 'Issued copy is up to date' }} ·
+            v{{ latest.version }}</span
+          >
+        } @else {
+          <span class="badge">Not yet issued</span>
+        }
+      </div>
+      @if (history(p.id).length) {
+        <label
+          >Earlier copies<select [(ngModel)]="versions[p.id]" (ngModelChange)="mode = 'issued'">
+            <option [ngValue]="undefined">Latest issued copy</option>
+            @for (old of history(p.id); track old.id) {
+              <option [value]="old.id">
+                Version {{ old.version }} · {{ old.at | date: 'd MMM, HH:mm' }}
+              </option>
+            }
+          </select></label
+        >
+      }
+    </div>
+    <article class="paper">
+      <header class="paper-header">
+        <div>
+          <img
+            class="paper-logo"
+            src="brand/broughton-logo.svg"
+            alt="Broughton"
+            width="130"
+            height="55"
+          />
+          <span class="eyebrow">POUCH TESTING PILOT</span>
+          <h2>Analyst work sheet</h2>
+          <p>{{ p.name }} <span class="muted">·</span> {{ date | date: 'EEEE d MMMM yyyy' }}</p>
+        </div>
+        <div class="sheet-version">
+          @if (mode === 'working') {
+            <strong>DRAFT</strong><small>Working plan · not issued</small>
+          } @else {
+            <strong
+              >{{ (sheet(p.id)?.version ?? 0) > 1 ? 'REVISED' : 'ISSUED' }} · v{{
+                sheet(p.id)?.version
+              }}</strong
+            ><small
+              >{{ sheet(p.id)?.at | date: 'd MMM yyyy, HH:mm' }}<br />Issued by
+              {{ sheet(p.id)?.by }}</small
+            >
+          }
+        </div>
+      </header>
+      @if (mode === 'issued' && (sheet(p.id)?.version ?? 0) > 1) {
+        <div class="paper-note">
+          <strong>Replace all earlier copies for this analyst and date.</strong> Tell the analyst
+          what changed before they start.
+        </div>
+      }
+      @if (
+        mode === 'issued' &&
+        (sheet(p.id)?.id !== store.latestSheet(date, p.id)?.id || store.changedSheet(sheet(p.id)!))
+      ) {
+        <div class="paper-note">
+          <strong>OUTDATED COPY — DO NOT USE.</strong> The working plan has changed or a newer
+          version has been issued. Ask the team leader for a replacement.
+        </div>
+      }
+      @if (!lines(p.id).length && !reservations(p.id).length) {
+        <div class="paper-note">
+          <strong>No work is assigned.</strong> This copy cancels earlier instructions for this
+          analyst and day.
+        </div>
+      }
+      <div class="paper-note">
+        Prototype sheet with fictional work and estimated times. Do not use for laboratory work.
+        Actual testing must follow the approved method and safety instructions.
+      </div>
+      @for (line of lines(p.id); track line.assignment.id) {
+        <section class="paper-task">
+          <div class="paper-task-heading">
+            <div>
+              <span class="eyebrow">{{ line.work.project }} · {{ line.work.client }}</span>
+              <h3>
+                {{ line.method.name }}
+                @if (line.assignment.repeatId) {
+                  <span class="badge amber">Repeat</span>
+                }
+              </h3>
+              <p>Work item: {{ line.work.identity }}</p>
+            </div>
+            <strong>{{ line.assignment.quantity }}<small>replicates assigned</small></strong>
+          </div>
+          <p>
+            <strong>{{ line.method.id }}</strong> · Start {{ line.assignment.time }} · Testing
+            target {{ line.work.testDue | date: 'd MMM' }} · Reporting deadline
+            {{ line.work.reportDue | date: 'd MMM' }}
+          </p>
+          <p>
+            <strong>Assigned samples / replicates:</strong>
+            {{
+              line.assignment.samples ||
+                'Not recorded on this copy. Confirm the exact subset with the team leader before starting.'
+            }}
+          </p>
+          @if (line.progressSummary; as progress) {
+            <div class="paper-note">
+              <strong
+                >{{
+                  mode === 'issued' ? 'Recorded when this copy was issued' : 'Already recorded'
+                }}:</strong
+              >
+              {{ progress.valid }} valid · {{ progress.failed }} failed / later rejected ·
+              {{ progress.remaining }} not yet attempted. Do not repeat recorded attempts from this
+              sheet. Repeat work needs its own linked assignment.
+            </div>
+          } @else {
+            <p class="paper-note">
+              This earlier copy has no saved progress summary. Check returned work with the team
+              leader before continuing.
+            </p>
+          }
+          @if (line.repeat) {
+            <div class="paper-note">
+              <strong
+                >Repeat only:
+                {{
+                  line.assignment.samples || 'Confirm the assigned subset with the team leader.'
+                }}</strong
+              ><br />Reason: {{ line.repeat.reason }}<br />{{
+                line.repeat.fresh
+                  ? 'Fresh preparation is required.'
+                  : 'Check whether existing prepared samples can still be used.'
+              }}
+              Original attempt reference: {{ line.repeat.assignmentId }}.
+            </div>
+          }
+          <p><strong>Before starting:</strong> {{ line.method.prerequisites }}</p>
+          @if (line.standard) {
+            <p>
+              <strong>Standard:</strong> {{ line.standard.name }} · preparation recorded
+              {{
+                line.standard.preparedAt
+                  ? (line.standard.preparedAt | date: 'd MMM, HH:mm')
+                  : 'not recorded'
+              }}
+              · shelf life {{ line.standard.shelfHours }} hours. Confirm identity and storage before
+              use.
+            </p>
+          }
+          @if (line.warnings?.length) {
+            <div class="sheet-warnings">
+              <strong>Team-leader checks before starting</strong>
+              <ul>
+                @for (warning of line.warnings; track $index) {
+                  <li>{{ warning }}</li>
+                }
+              </ul>
+            </div>
+          }
+          @if (!line.work.ready || line.work.blocker) {
+            <p class="paper-note">
+              <strong>Readiness needs checking:</strong>
+              {{ !line.work.ready ? 'Samples not marked ready. ' : '' }}{{ line.work.blocker }}
+            </p>
+          }
+          <p class="help">
+            Planning times are estimates, not verified capacity. Quantity does not change the
+            durations. Follow the approved method for fractions, timed interventions and instrument
+            sequences.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Planning step</th>
+                <th>Hands-on / total</th>
+                <th>Equipment</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (step of steps(line); track $index) {
+                <tr>
+                  <td>{{ timeAt(step.start) }}–{{ timeAt(step.end) }}</td>
+                  <td>{{ step.name }}</td>
+                  <td>{{ step.handsOn }} / {{ step.duration }} min</td>
+                  <td>
+                    {{ line.equipmentNames[line.assignment.equipment[step.equipment]] || '—' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          <p>
+            <strong>Instructions:</strong>
+            {{
+              line.assignment.instructions ||
+                'Confirm details with the team leader before starting.'
+            }}
+          </p>
+          <div class="return-fields">
+            <span>Valid output: ______</span><span>Failed attempts: ______</span
+            ><span>Not attempted: ______</span>
+          </div>
+          <p>
+            Sample / replicate IDs and problem: __________________________________________________
+          </p>
+          <p>______________________________________________________________________________</p>
+          <p class="paper-sign">
+            Analyst: _______________________ &nbsp; Date / time: _______________________
+          </p>
+        </section>
+      }
+      @if (reservations(p.id).length) {
+        <section class="paper-task">
+          <h3>Other commitments</h3>
+          @for (r of reservations(p.id); track r.id) {
+            <p>
+              {{ r.time }}–{{ timeAt(stamp(r.date, r.time) + r.minutes * 60000) }} · {{ r.label }}
+            </p>
+          }
+        </section>
+      }
+      <footer>
+        Enter only this update's successful replicates and failed attempts, plus work still
+        unattempted. Do not include results already recorded. Return this sheet to the team
+        leader.<br />{{ p.name }} · {{ date }} ·
+        {{ mode === 'working' ? 'Draft' : 'Version ' + sheet(p.id)?.version }}
+      </footer>
+    </article>
+  } @else {
+    <div class="empty print-controls">
+      {{ p.name }} ·
+      {{
+        mode === 'issued'
+          ? 'No issued copy for this day.'
+          : 'No work or reserved time for this day.'
+      }}
+    </div>
+  }
+}

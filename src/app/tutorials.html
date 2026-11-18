@@ -1,0 +1,93 @@
+<section class="panel tutorial-start" aria-labelledby="tutorial-start-title">
+  <div class="tutorial-intro">
+    <div>
+      <h2 id="tutorial-start-title">Start with one job</h2>
+      <ol class="tutorial-route">
+        <li>Add the work that needs testing.</li>
+        <li>Assign it to a person and equipment.</li>
+        <li>Print the analyst’s work sheet.</li>
+        <li>Record what was done and plan any repeats.</li>
+      </ol>
+      <p class="help">
+        Your work queue and schedule start empty. Example methods, standards, analysts and equipment
+        are included. Add a method or standard only if you need another. Use fictional work.
+      </p>
+    </div>
+    <aside class="tutorial-companion" aria-labelledby="tutorial-companion-title">
+      <h3 id="tutorial-companion-title">Keep the guide open</h3>
+      <p>
+        Open this page in another tab. Use your original tab to do the steps. You can move the guide
+        into a separate window to see both.
+      </p>
+      <a mat-stroked-button href="#tutorials" target="_blank" rel="noopener"
+        >Open tutorials in a new tab</a
+      >
+      <p class="help">
+        Edit in one tab only. If the guide shows an out-of-date-plan notice, keep reading. Reload
+        before editing there—do not reset the demo.
+      </p>
+    </aside>
+  </div>
+</section>
+<section class="tutorial-list" aria-labelledby="tutorial-list-title">
+  <h2 id="tutorial-list-title">What do you want to do?</h2>
+  <p class="help">Open a task. Use its field guide if you are unsure what to enter.</p>
+  @for (tutorial of tutorials; track tutorial.id; let i = $index) {
+    <details class="panel tutorial" [id]="'tutorial-' + tutorial.id">
+      <summary>
+        <span class="tutorial-number" aria-hidden="true">{{ i + 1 }}</span>
+        <span class="tutorial-title"
+          >{{ tutorial.title }}<small>{{ tutorial.purpose }}</small></span
+        >
+      </summary>
+      <div class="tutorial-body">
+        <p class="tutorial-context">
+          <strong>From Excel:</strong> {{ help[tutorial.id].spreadsheet }}
+        </p>
+        <ol class="tutorial-steps">
+          @for (step of tutorial.steps; track $index) {
+            <li>{{ step }}</li>
+          }
+        </ol>
+        <details class="tutorial-fields">
+          <summary>Field guide <span>· what to enter</span></summary>
+          <dl>
+            @for (field of help[tutorial.id].fields; track field.name) {
+              <div>
+                <dt>{{ field.name }}</dt>
+                <dd>{{ field.meaning }}</dd>
+              </div>
+            }
+          </dl>
+        </details>
+        <div class="tutorial-effects">
+          <section [attr.aria-labelledby]="'automatic-' + tutorial.id">
+            <h3 [id]="'automatic-' + tutorial.id">The app does this</h3>
+            <ul>
+              @for (item of help[tutorial.id].automatic; track $index) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          </section>
+          <section [attr.aria-labelledby]="'manual-' + tutorial.id">
+            <h3 [id]="'manual-' + tutorial.id">You do this</h3>
+            <ul>
+              @for (item of help[tutorial.id].manual; track $index) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          </section>
+        </div>
+        @if (help[tutorial.id].example; as example) {
+          <div class="tutorial-example">
+            <h3>Example</h3>
+            <p>{{ example }}</p>
+          </div>
+        }
+        <button mat-stroked-button (click)="openScreen.emit(tutorial.destination)">
+          {{ tutorial.action }}
+        </button>
+      </div>
+    </details>
+  }
+</section>
